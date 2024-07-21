@@ -1,30 +1,104 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+    <v-app>
+        <v-main>
+            <div class="pa-4">
+                <v-table>
+                    <thead>
+                        <tr>
+                            <th>Panel ID</th>
+                            <th>Material</th>
+                            <th>Qty</th>
+                            <th>Width</th>
+                            <th>Length</th>
+                            <th>Thiccness</th>
+                            <th>Z Clips</th>
+                            <th>Accessories</th>
+                            <th>Lighting</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="panelSet of Object.values(panelSets)"
+                        >
+                            <td>{{ panelSet.id }}</td>
+                            <td>{{ panelSet.material }}</td>
+                            <td>{{ panelSet.qty }}</td>
+                            <td>{{ panelSet.width }}</td>
+                            <td>{{ panelSet.length }}</td>
+                            <td>{{ panelSet.thickness }}</td>
+                            <td>{{ panelSet.zClips }}</td>
+                            <td>{{ panelSet.accessories }}</td>
+                            <td>{{ panelSet.lighting }}</td>
+                            <td>
+                                <v-btn variant="text" color="red" icon @click="delete panelSets[panelSet.id]">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+                
+                <AddPanelSet
+                    v-model:panel-sets="panelSets"
+                    color="success"
+                />
+            </div>
+        </v-main>
+    </v-app>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<script setup lang="ts">
+import {
+    computed,
+    ref,
+    reactive,
+} from 'vue';
+import type {
+    PanelSet,
+    Material,
+} from './types';
+import AddPanelSet from '@/components/AddPanelSet.vue'
+
+/** inches */
+const width = ref(1);
+/** inches */
+const length = ref(1);
+/** inches */
+const thickness = ref(1);
+
+const panelQty = ref(1);
+
+
+const materialOptions: Material[] = [
+    'glass',
+    'acrylic',
+    'terrazzo',
+];
+const materials = ref<Material[]>([]);
+
+
+type ZClipOption = '1/8"' | '1/2"';
+/** only used with glass & acryllic */
+const zclips = ref<ZClipOption>('1/8"');
+
+
+/**
+ * keyed by panel id
+ */
+const panelSets = ref<Record<string, PanelSet>>({});
+
+// const weight = computed(() => {
+//     // return the calculated weight
+//     if ()
+// });
+
+// material weight cannot exceed 2500lbs, otherwise additional crates are required
+
+
+// crate 
+
+// function deleteSet (id: string) {
+
+// }
+</script>
