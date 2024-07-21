@@ -44,6 +44,7 @@
                     color="success"
                 />
             </div>
+            {{ result }}
         </v-main>
     </v-app>
 </template>
@@ -57,8 +58,10 @@ import {
 import type {
     PanelSet,
     Material,
+    Crate,
 } from './types';
 import AddPanelSet from '@/components/AddPanelSet.vue'
+
 
 /** inches */
 const width = ref(1);
@@ -88,17 +91,66 @@ const zclips = ref<ZClipOption>('1/8"');
  */
 const panelSets = ref<Record<string, PanelSet>>({});
 
-// const weight = computed(() => {
-//     // return the calculated weight
-//     if ()
-// });
+const result = computed(() => {
+    // if all the panels are acryllic, and total depth < 10", use acryllic
+    const panelSetList = Object.values(panelSets.value);
 
-// material weight cannot exceed 2500lbs, otherwise additional crates are required
+    // ensure all the materials are the same. otherwise return null because we aren't gonna be calculating that
+    let material: Material | null = null;
+    for (const panelSet of panelSetList) {
+        if (material === null) {
+            // initial material
+            material = panelSet.material;
+        } else if (material !== panelSet.material) {
+            // this is a different material from the initial material, abort
+            return null;
+        }
+    }
+    
+    if (material === 'acrylic') {
+        let combinedPanelThickness = 0;
+        
+        for (const panelSet of panelSetList) {
+            /** use foam if there's zclips */
+            const separator: 'foam' | 'cardboard' = panelSet.zClips === 'none' ? 'cardboard' : 'foam';
+            /**
+             * - if there are no z-clips, use cardboard separators with a thickness of .125"
+             * - else, the foam thickness will be .75"
+             */
+            const separatorThickness = separator === 'cardboard' ? .125 : .75;
+            combinedPanelThickness += panelSet.thickness * panelSet.qty + separatorThickness * panelSet.qty;
+        }
 
+        return {
+            combinedPanelThickness,
+        };
+    } else if (material === 'glass') {
 
-// crate 
+    } else if (material === 'terrazzo') {
 
-// function deleteSet (id: string) {
+    }
 
-// }
+    // not sure how we get here
+    return null;
+    
+    // const hasAcrylic = panelSetList.some(panelSet => panelSet.material === 'acrylic');
+    // const hasGlass = panelSetList.some(panelSet => panelSet.material === 'glass');
+    // const hasTz = panelSetList.some(panelSet => panelSet.material === 'terrazzo');
+
+    // let separator: 'foam' | 'cardboard' = 'cardboard';
+
+    // // use foam if material is glass or terrazzo
+    // if (hasGlass || hasTz) {
+    //     separator = 'foam';
+    // }
+
+    // // use foam if zclips are used
+    // if (panelSetList.some(panelSet => panelSet.zClips !== 'none')) {
+    //     separator = 'foam';
+    // }
+
+    // if (hasAcrylic)
+    // if combined thickness of separator and acrylic panels < 10", use a flat crate
+
+});
 </script>

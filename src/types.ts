@@ -46,3 +46,35 @@ function stabilityWallReinforcements (width: number, height: number) {
     const meh = height * height + (width * width)/2;
     return Math.sqrt(meh) - (1.75 * meh) / (.5 * width * height);
 }
+
+export type Crate = {
+    type: 'lightweight' | 'flat' | 'box' | 'a-frame';
+    /** inches */
+    width: number;
+    /** inches */
+    length: number;
+    /** inches */
+    height: number;
+}
+
+// type FlatCrate = {
+//     type: 'flat';
+// }
+
+// type LightweightCrate = {
+//     type: 'lightweight';
+// }
+
+// type BoxCrate = {
+//     type: 'box';
+// }
+
+// type AFrameCrate = {
+//     type: 'a-frame';
+// }
+
+export type Cutlist = {
+    type: '2x4';
+    length: number;
+    qty: number;
+}[];
