@@ -35,11 +35,23 @@ export type PanelSet = {
     width: number;
     length: number;
     thickness: number;
+    /** not sure why this is needed */
     id: string;
     zClips: ZClip;
-    accessories: Choice;
+    /** if yes, add 5" */
     lighting: Choice;
 }
+
+export type Job = {
+    panelSets: PanelSet[];
+    /** dimensions for any extra accessories */
+    accessories: {
+        width: number;
+        length: number;
+        height: number;
+    } | null;
+}
+
 
 /** units in inches */
 function stabilityWallReinforcements (width: number, height: number) {
@@ -47,34 +59,52 @@ function stabilityWallReinforcements (width: number, height: number) {
     return Math.sqrt(meh) - (1.75 * meh) / (.5 * width * height);
 }
 
-export type Crate = {
-    type: 'lightweight' | 'flat' | 'box' | 'a-frame';
-    /** inches */
-    width: number;
-    /** inches */
-    length: number;
-    /** inches */
-    height: number;
-}
-
-// type FlatCrate = {
-//     type: 'flat';
+// export type Crate = {
+//     kind: 'lightweight' | 'flat' | 'box' | 'a-frame';
+//     /** inches */
+//     width: number;
+//     /** inches */
+//     length: number;
+//     /** inches */
+//     height: number;
 // }
 
+type FlatCrate = {
+    kind: 'flat';
+    shortWallLength: number;
+    longWallLength: number;
+    plywoodWidth: number;
+    plywoodLength: number;
+    frame: FrameKind;
+}
+
 // type LightweightCrate = {
-//     type: 'lightweight';
+//     kind: 'lightweight';
 // }
 
 // type BoxCrate = {
-//     type: 'box';
+//     kind: 'box';
 // }
 
 // type AFrameCrate = {
-//     type: 'a-frame';
+//     kind: 'a-frame';
 // }
 
+export type FrameKind = '2x4' | '2x6' | '2x4 + 2x4' | '2x6 + 2x6' | '2x4 + 2x6';
+
 export type Cutlist = {
-    type: '2x4';
-    length: number;
-    qty: number;
-}[];
+    crates: FlatCrate[];
+    // length: number;
+    // qty: number;
+};
+
+export type Equation = {
+    name: string;
+    terms: {
+        value: number;
+        /** where the value comes from */
+        name: string;
+        /** multiplier */
+        qty?: number;
+    }[],
+};

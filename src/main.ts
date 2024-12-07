@@ -1,3 +1,4 @@
+import './test';
 /**
  * main.ts
  *
