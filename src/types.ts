@@ -51,6 +51,10 @@ export type Job = {
         length: number;
         height: number;
     } | null;
+    tmpAccessories: {
+        smallBox: boolean;
+        largeBox: boolean;
+    };
 }
 
 

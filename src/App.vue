@@ -60,21 +60,23 @@
                         </v-table>
                     </template>
                 </v-expansion-panel>
-                <!-- <v-expansion-panel>
+                <v-expansion-panel>
                     <template #title>
                         <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
                             <b class="flex-grow-1">Accessories</b>
-                            <v-btn
-                                color="success"
-                            >
-                                <v-icon>mdi-plus-thick</v-icon> Add
-                            </v-btn>
                         </div>
                     </template>
                     <template #text>
-                        stuff goes here
+                        <v-checkbox
+                            label="Small Box"
+                            v-model="smallBox"
+                        />
+                        <v-checkbox
+                            label="Large Box"
+                            v-model="largeBox"
+                        />
                     </template>
-                </v-expansion-panel> -->
+                </v-expansion-panel>
                 <v-expansion-panel>
                     <template #title>
                         <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
@@ -124,10 +126,17 @@ const panelSetsNormal = computed({
     set: val => panelSets.value = val,
 });
 
+const smallBox = ref(true);
+const largeBox = ref(true);
+
 const job = computed<Job>(() => {
     return {
         panelSets: Object.values(panelSets.value),
         accessories: null,
+        tmpAccessories: {
+            smallBox: smallBox.value,
+            largeBox: largeBox.value,
+        },
     };
 });
 
