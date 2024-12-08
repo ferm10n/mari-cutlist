@@ -65,11 +65,18 @@
                     <v-btn
                         color="success"
                         block
-                        :disabled="!canAdd"
+                        variant="outlined"
+                        :disabled="Boolean(invalidError)"
                         @click="isActive.value = false; addPanelSet()"
                     >
                         Add Panel Set
                     </v-btn>
+                </v-card-actions>
+                <v-card-actions
+                    v-if="invalidError"
+                    class="mx-auto text-red"
+                >
+                    {{ invalidError }}
                 </v-card-actions>
             </v-card>
         </template>
@@ -113,12 +120,19 @@ const defaultNewSet: PanelSet = {
 
 const newSet = ref<PanelSet>({ ...defaultNewSet })
 
-// TODO ensure the same ID isn't used more than once
-
-const canAdd = computed<boolean>(() => {
-    const allIds = Object.keys(props.panelSets)
-    return Boolean(newSet.value.id && !allIds.includes(newSet.value.id))
-})
+const invalidError = computed<string | null>(() => {
+    if (!newSet.value.id) {
+        return 'Panel ID is required'
+    }
+    if (Object.keys(props.panelSets).includes(newSet.value.id)) {
+        return 'Panel ID must be unique'
+    }
+    if (newSet.value.material !== 'acrylic') {
+        // FUTURE support other materials
+        return 'Only acrylic is supported at this time'
+    }
+    return null;
+});
 
 function addPanelSet () {
     emit('update:panel-sets', {
