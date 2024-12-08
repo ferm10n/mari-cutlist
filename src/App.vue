@@ -1,58 +1,94 @@
 <template>
     <v-app>
         <v-main>
-            <div class="pa-4">
-                <v-table>
-                    <thead>
-                        <tr>
-                            <th>Panel ID</th>
-                            <th>Material</th>
-                            <th>Qty</th>
-                            <th>Width</th>
-                            <th>Length</th>
-                            <th>Thiccness</th>
-                            <th>Z Clips</th>
-                            <th>Frame</th>
-                            <th>Lighting</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="panelSet of Object.values(panelSetsNormal)"
-                        >
-                            <td>{{ panelSet.id }}</td>
-                            <td>{{ panelSet.material }}</td>
-                            <td>{{ panelSet.qty }}</td>
-                            <td>{{ panelSet.width }}</td>
-                            <td>{{ panelSet.length }}</td>
-                            <td>{{ panelSet.thickness }}</td>
-                            <td>{{ panelSet.zClips }}</td>
-                            <td>{{ panelSet.frame }}</td>
-                            <td>{{ panelSet.lighting }}</td>
-                            <td>
-                                <v-btn
-                                    variant="text"
-                                    color="red"
-                                    icon
-                                    @click="delete panelSetsNormal[panelSet.id]"
+            <v-expansion-panels
+                tile
+                multiple
+                v-model="openSections"
+            >
+                <v-expansion-panel>
+                    <template #title>
+                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
+                            <span class="flex-grow-1">Panels</span>
+                            <AddPanelSet
+                                v-model:panel-sets="panelSetsNormal"
+                                color="success"
+                            />
+                        </div>
+                    </template>
+                    <template #text>
+                        <v-table>
+                            <thead>
+                                <tr>
+                                    <th>Panel ID</th>
+                                    <th>Material</th>
+                                    <th>Qty</th>
+                                    <th>Width</th>
+                                    <th>Length</th>
+                                    <th>Thiccness</th>
+                                    <th>Z Clips</th>
+                                    <th>Frame</th>
+                                    <th>Lighting</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="panelSet of Object.values(panelSetsNormal)"
                                 >
-                                    <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-                
-                <AddPanelSet
-                    v-model:panel-sets="panelSetsNormal"
-                    color="success"
-                />
-            </div>
-            <Cutlist
-                class="pa-4"
-                :cutlist="cutlist"
-            />
+                                    <td>{{ panelSet.id }}</td>
+                                    <td>{{ panelSet.material }}</td>
+                                    <td>{{ panelSet.qty }}</td>
+                                    <td>{{ panelSet.width }}</td>
+                                    <td>{{ panelSet.length }}</td>
+                                    <td>{{ panelSet.thickness }}</td>
+                                    <td>{{ panelSet.zClips }}</td>
+                                    <td>{{ panelSet.frame }}</td>
+                                    <td>{{ panelSet.lighting }}</td>
+                                    <td>
+                                        <v-btn
+                                            variant="text"
+                                            color="red"
+                                            icon
+                                            @click="delete panelSetsNormal[panelSet.id]"
+                                        >
+                                            <v-icon>mdi-close</v-icon>
+                                        </v-btn>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-table>
+                    </template>
+                </v-expansion-panel>
+                <!-- <v-expansion-panel>
+                    <template #title>
+                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
+                            <span class="flex-grow-1">Accessories</span>
+                            <v-btn
+                                color="success"
+                            >
+                                <v-icon>mdi-plus-thick</v-icon> Add
+                            </v-btn>
+                        </div>
+                    </template>
+                    <template #text>
+                        stuff goes here
+                    </template>
+                </v-expansion-panel> -->
+                <v-expansion-panel>
+                    <template #title>
+                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
+                            <span class="flex-grow-1">Cutlist</span>
+                        </div>
+                    </template>
+                    <template #text>
+                        <Cutlist
+                            class="pa-4"
+                            :cutlist="cutlist"
+                        />
+                    </template>
+                </v-expansion-panel>
+            </v-expansion-panels>
         </v-main>
     </v-app>
 </template>
@@ -60,12 +96,10 @@
 <script setup lang="ts">
 import {
     computed,
-    // ref,
-    // Ref,
+    ref,
 } from 'vue';
 import type {
     PanelSet,
-    // Material,
     Job,
     Cutlist as CutlistType,
 } from './types';
@@ -77,6 +111,8 @@ import {
     useLocalStorage,
 } from '@vueuse/core';
 import Cutlist from './components/Cutlist.vue';
+
+const openSections = ref([0])
 
 const panelSets = useLocalStorage<{
     [panelId: string]: PanelSet;

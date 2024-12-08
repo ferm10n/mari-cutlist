@@ -3,9 +3,9 @@
         <template #activator="{ props: activatorProps }">
             <v-btn
                 v-bind="activatorProps"
-                block
+                color="success"
             >
-                Add to Material Set
+                <v-icon>mdi-plus-thick</v-icon> Add
             </v-btn>
         </template>
 
@@ -69,7 +69,7 @@
                         :disabled="Boolean(invalidError)"
                         @click="isActive.value = false; addPanelSet()"
                     >
-                        Add Panel Set
+                        Add
                     </v-btn>
                 </v-card-actions>
                 <v-card-actions
