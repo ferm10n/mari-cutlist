@@ -50,8 +50,8 @@
                         :items="zOptionItems"
                     />
                     <v-select
-                        label="Accessories"
-                        v-model="newSet.accessories"
+                        label="Frame"
+                        v-model="newSet.frame"
                         :items="choiceItems"
                     />
                     <v-select
@@ -94,9 +94,9 @@ const zOptionItems = Object.keys(zClipOptions);
 
 const choiceItems = Object.keys(choiceOptions);
 
-const props = defineProps<{ panelSets: Record<string, PanelSet> }>()
+const props = defineProps<{ panelSets: { [panelId: string]: PanelSet; } }>()
 const emit = defineEmits<{
-    (e: 'update:panel-sets', payload: Record<string, PanelSet>): void,
+    (e: 'update:panel-sets', payload: { [panelId: string]: PanelSet; }): void,
 }>()
 
 const defaultNewSet: PanelSet = {
@@ -107,7 +107,7 @@ const defaultNewSet: PanelSet = {
     thickness: 1,
     width: 1,
     zClips: 'none',
-    accessories: 'No',
+    frame: 'No',
     lighting: 'No',
 }
 

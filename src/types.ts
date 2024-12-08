@@ -40,6 +40,7 @@ export type PanelSet = {
     zClips: ZClip;
     /** if yes, add 5" */
     lighting: Choice;
+    frame: Choice;
 }
 
 export type Job = {
@@ -54,7 +55,7 @@ export type Job = {
 
 
 /** units in inches */
-function stabilityWallReinforcements (width: number, height: number) {
+export function stabilityWallReinforcements (width: number, height: number) {
     const meh = height * height + (width * width)/2;
     return Math.sqrt(meh) - (1.75 * meh) / (.5 * width * height);
 }
@@ -69,6 +70,16 @@ function stabilityWallReinforcements (width: number, height: number) {
 //     height: number;
 // }
 
+export type SeparatorKind = 'cardboard' | 'thin foam' | 'thick foam';
+
+export const separatorThicknessMap: {
+    [s in SeparatorKind]: number;
+} = {
+    cardboard: 0.125,
+    'thin foam': 0.375,
+    'thick foam': 0.75,
+}
+
 type FlatCrate = {
     kind: 'flat';
     shortWallLength: number;
@@ -76,6 +87,10 @@ type FlatCrate = {
     plywoodWidth: number;
     plywoodLength: number;
     frame: FrameKind;
+    stacking: {
+        panelId: string;
+        separator: SeparatorKind;
+    }[];
 }
 
 // type LightweightCrate = {
@@ -100,6 +115,7 @@ export type Cutlist = {
 
 export type Equation = {
     name: string;
+    /** terms get added together */
     terms: {
         value: number;
         /** where the value comes from */

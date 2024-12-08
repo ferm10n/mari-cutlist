@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddMaterialSetItem: typeof import('./src/components/AddMaterialSetItem.vue')['default']
     AddPanelSet: typeof import('./src/components/AddPanelSet.vue')['default']
+    Cutlist: typeof import('./src/components/Cutlist.vue')['default']
     FlatCrate: typeof import('./src/components/FlatCrate.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
   }

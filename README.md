@@ -1,5 +1,7 @@
 # Cutlist
 
+> Unless stated otherwise, all units are in inches.
+
 - user input: materials (panels, accessories, components) to put in crates
 - program output: how the materials should be packaged
     - which crate(s) should be used
