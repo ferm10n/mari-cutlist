@@ -9,7 +9,7 @@
                 <v-expansion-panel>
                     <template #title>
                         <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
-                            <span class="flex-grow-1">Panels</span>
+                            <b class="flex-grow-1">Panels</b>
                             <AddPanelSet
                                 v-model:panel-sets="panelSetsNormal"
                                 color="success"
@@ -63,7 +63,7 @@
                 <!-- <v-expansion-panel>
                     <template #title>
                         <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
-                            <span class="flex-grow-1">Accessories</span>
+                            <b class="flex-grow-1">Accessories</b>
                             <v-btn
                                 color="success"
                             >
@@ -78,7 +78,7 @@
                 <v-expansion-panel>
                     <template #title>
                         <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
-                            <span class="flex-grow-1">Cutlist</span>
+                            <b class="flex-grow-1">Cutlist</b>
                         </div>
                     </template>
                     <template #text>

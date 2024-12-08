@@ -64,3 +64,10 @@
     - length of short wall: `width of panels 10" + 1" for wiggle room + 0.75"*2 (1.5") for foam walls + 1.5"*1 of wall thickness`
     - plywood length: `length of long wall + 1.5" of wall thickness`
     - plywood width: `length of short wall + 1.5" of wall thickness`
+
+## TODOs
+
+- [ ] Make panel sets editable
+- [ ] accessories dimensions input
+- [ ] support more materials / crate types
+- [ ] 3D packing visualizer?
