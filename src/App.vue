@@ -108,6 +108,7 @@
                     </template>
                 </v-expansion-panel>
             </v-expansion-panels>
+            <JobPrompt />
         </v-main>
     </v-app>
 </template>
@@ -131,6 +132,7 @@ import {
     importStore,
     store,
 } from './store';
+import JobPrompt from './components/JobPrompt.vue';
 
 const openSections = ref([0, 1, 2])
 
