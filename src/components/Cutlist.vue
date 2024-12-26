@@ -20,6 +20,7 @@
                 </ul>
             </template>
         </template>
+        <i v-if="cutlist.crates.length === 0">No crates for cutlist yet. Add a panel!</i>
     </div>
 </template>
 

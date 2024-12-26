@@ -23,22 +23,22 @@
                     <v-text-field
                         label="Length (inches)"
                         type="number"
-                        v-model="newSet.length"
+                        v-model.number="newSet.length"
                     />
                     <v-text-field
                         label="Width (inches)"
                         type="number"
-                        v-model="newSet.width"
+                        v-model.number="newSet.width"
                     />
                     <v-text-field
                         label="Thiccness (inches)"
                         type="number"
-                        v-model="newSet.thickness"
+                        v-model.number="newSet.thickness"
                     />
                     <v-text-field
                         label="Qty"
                         type="number"
-                        v-model="newSet.qty"
+                        v-model.number="newSet.qty"
                     />
                     <v-text-field
                         label="Panel ID"

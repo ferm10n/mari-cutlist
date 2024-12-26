@@ -1,4 +1,7 @@
-export type Material = 'glass' | 'acrylic' | 'terrazzo';
+import z from 'zod';
+
+const materialSchema = z.enum(['glass', 'acrylic', 'terrazzo']);
+export type Material = z.infer<typeof materialSchema>;
 
 /** maps internal value to user selected value */
 export const materialOptions: {
@@ -9,7 +12,8 @@ export const materialOptions: {
     terrazzo: 'Terrazzo',
 };
 
-type ZClip = '1/8"' | '1/2"' | 'none';
+const zClipSchema = z.enum(['1/8"', '1/2"', 'none']);
+type ZClip = z.infer<typeof zClipSchema>;
 
 /** maps user selected option to thicknessValue */
 export const zClipOptions: {
@@ -20,7 +24,8 @@ export const zClipOptions: {
     'none': 0,
 };
 
-export type Choice = 'Yes' | 'No';
+const choiceSchema = z.enum(['Yes', 'No']);
+export type Choice = z.infer<typeof choiceSchema>;
 /** maps user selected option to boolean */
 export const choiceOptions: {
     [a in Choice]: boolean;
@@ -29,19 +34,20 @@ export const choiceOptions: {
     'No': false,
 };
 
-export type PanelSet = {
-    qty: number;
-    material: Material;
-    width: number;
-    length: number;
-    thickness: number;
+export const panelSetSchema = z.object({
+    qty: z.number(),
+    material: materialSchema,
+    width: z.number(),
+    length: z.number(),
+    thickness: z.number(),
     /** not sure why this is needed */
-    id: string;
-    zClips: ZClip;
+    id: z.string(),
+    zClips: zClipSchema,
     /** if yes, add 5" */
-    lighting: Choice;
-    frame: Choice;
-}
+    lighting: choiceSchema,
+    frame: choiceSchema,
+});
+export type PanelSet = z.infer<typeof panelSetSchema>;
 
 export type Job = {
     panelSets: PanelSet[];
