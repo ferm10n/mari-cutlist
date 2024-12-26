@@ -69,7 +69,7 @@
 
 - [x] saving / loading cutlist app state to a file
 - [x] prompt for job number at the start
-- [ ] require inputs for new panel sets, and start blank
+- [x] require inputs for new panel sets, and start blank
 - [ ] material cost
 - [ ] accessory box needs to affect the height of the frame
 - [ ] minimum dimension for feet / base

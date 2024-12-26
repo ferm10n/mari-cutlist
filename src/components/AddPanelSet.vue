@@ -106,35 +106,50 @@ const emit = defineEmits<{
     (e: 'update:panel-sets', payload: { [panelId: string]: PanelSet; }): void,
 }>()
 
-const defaultNewSet: PanelSet = {
-    length: 1,
-    material: 'acrylic',
-    qty: 1,
-    id: '',
-    thickness: 1,
-    width: 1,
-    zClips: 'none',
-    frame: 'No',
-    lighting: 'No',
+type NullablePanelSet = {
+    [K in keyof PanelSet]: PanelSet[K] | null;
+};
+
+const defaultNewSet: NullablePanelSet = {
+    length: null,
+    material: null,
+    qty: null,
+    id: null,
+    thickness: null,
+    width: null,
+    zClips: null,
+    frame: null,
+    lighting: null,
 }
 
-const newSet = ref<PanelSet>({ ...defaultNewSet })
+const newSet = ref<NullablePanelSet>({ ...defaultNewSet })
+
+function validatePanelSet (panelSet: NullablePanelSet): asserts panelSet is PanelSet {
+    for (const key of Object.keys(panelSet) as Array<keyof PanelSet>) {
+        if (panelSet[key] === null) {
+            throw new Error('All fields are required');
+        }
+    }
+    if (Object.keys(props.panelSets).includes(panelSet.id!)) {
+        throw new Error('Panel ID must be unique');
+    }
+    if (panelSet.material !== 'acrylic') {
+        // FUTURE support other materials
+        throw new Error('Only acrylic is supported at this time');
+    }
+}
 
 const invalidError = computed<string | null>(() => {
-    if (!newSet.value.id) {
-        return 'Panel ID is required'
+    try {
+        validatePanelSet(newSet.value);
+        return null;
+    } catch (e) {
+        return (e as Error).message;
     }
-    if (Object.keys(props.panelSets).includes(newSet.value.id)) {
-        return 'Panel ID must be unique'
-    }
-    if (newSet.value.material !== 'acrylic') {
-        // FUTURE support other materials
-        return 'Only acrylic is supported at this time'
-    }
-    return null;
 });
 
 function addPanelSet () {
+    validatePanelSet(newSet.value);
     emit('update:panel-sets', {
         ...props.panelSets,
         [newSet.value.id]: newSet.value,
