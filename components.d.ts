@@ -11,5 +11,8 @@ declare module 'vue' {
     Cutlist: typeof import('./src/components/Cutlist.vue')['default']
     FlatCrate: typeof import('./src/components/FlatCrate.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    JobPrompt: typeof import('./src/components/JobPrompt.vue')['default']
+    PanelSetDialog: typeof import('./src/components/PanelSetDialog.vue')['default']
+    PanelSets: typeof import('./src/components/PanelSets.vue')['default']
   }
 }

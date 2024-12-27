@@ -27,10 +27,19 @@
                                 <v-icon>mdi-content-save</v-icon>
                                 Export
                             </v-btn>
-                            <AddPanelSet
+                            <PanelSetDialog
                                 v-model:panel-sets="panelSets"
+                                v-model:panel-set="wipPanelSet"
+                                v-model:mode="showPanelSetDialog"
                                 color="success"
-                            />
+                            >
+                                <v-btn
+                                    color="success"
+                                    @click.stop="wipPanelSet = initNewPanelSet(); showPanelSetDialog = 'add';"    
+                                >
+                                    <v-icon>mdi-plus-thick</v-icon> Add
+                                </v-btn>
+                            </PanelSetDialog>
                         </div>
                     </template>
                     <template #text>
@@ -46,7 +55,7 @@
                                     <th>Z Clips</th>
                                     <th>Frame</th>
                                     <th>Lighting</th>
-                                    <th>Remove</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,7 +71,15 @@
                                     <td>{{ panelSet.zClips }}</td>
                                     <td>{{ panelSet.frame }}</td>
                                     <td>{{ panelSet.lighting }}</td>
-                                    <td>
+                                    <td class="text-center">
+                                        <v-btn
+                                            variant="text"
+                                            color="orange"
+                                            icon
+                                            @click="editPanelSet(panelSet.id)"
+                                        >
+                                            <v-icon>mdi-pencil</v-icon>
+                                        </v-btn>
                                         <v-btn
                                             variant="text"
                                             color="red"
@@ -122,7 +139,7 @@ import type {
     Job,
     Cutlist as CutlistType,
 } from './types';
-import AddPanelSet from '@/components/AddPanelSet.vue'
+import PanelSetDialog from '@/components/PanelSetDialog.vue'
 import {
     getFlatCutlist,
 } from './flat-crate';
@@ -133,13 +150,28 @@ import {
     store,
 } from './store';
 import JobPrompt from './components/JobPrompt.vue';
+import {
+    type NullablePanelSet,
+    initNewPanelSet,
+} from './components/panel-set-dialog-utils';
 
-const openSections = ref([0, 1, 2])
+const openSections = ref([0, 1, 2]);
+
+/** a new panel set, or a panel set being edited */
+const wipPanelSet = ref<NullablePanelSet>(initNewPanelSet());
+const showPanelSetDialog = ref<'add' | 'edit' | null>(null);
 
 const panelSets = computed({
     get: () => store.value.panelSets,
-    set: val => store.value.panelSets = val,
+    set: val => {
+        showPanelSetDialog.value = null;
+        store.value.panelSets = val;
+    },
 });
+function editPanelSet (id: string) {
+    wipPanelSet.value = { ...panelSets.value[id] };
+    showPanelSetDialog.value = 'edit';
+}
 function deletePanelSet (id: string) {
     delete panelSets.value[id];
     panelSets.value = { ...panelSets.value };
