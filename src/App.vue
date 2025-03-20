@@ -124,6 +124,16 @@
                         />
                     </template>
                 </v-expansion-panel>
+                <v-expansion-panel>
+                    <template #title>
+                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
+                            <b class="flex-grow-1">Box View</b>
+                        </div>
+                    </template>
+                    <template #text>
+                        <BoxViewer />
+                    </template>
+                </v-expansion-panel>
             </v-expansion-panels>
             <JobPrompt />
         </v-main>

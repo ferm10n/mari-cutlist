@@ -103,6 +103,8 @@ type FlatCrate = {
     }[];
 }
 
+export type Crate = FlatCrate;
+
 // type LightweightCrate = {
 //     kind: 'lightweight';
 // }
@@ -133,4 +135,20 @@ export type Equation = {
         /** multiplier */
         qty?: number;
     }[],
+};
+
+export type Box = {
+    id: string;
+    label: string;
+    size: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    pos: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    // TODO tolerance / gaps?
 };
