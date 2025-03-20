@@ -1,5 +1,14 @@
 # Cutlist
 
+## Getting started
+
+- nodejs is required
+- `yarn` to install dependencies
+- `yarn dev` to start the development server
+- pushes to the `master` branch will automatically deploy to https://ferm10n.github.io/mari-cutlist/
+
+## Notes
+
 > Unless stated otherwise, all units are in inches.
 
 - user input: materials (panels, accessories, components) to put in crates
@@ -70,10 +79,10 @@
 - [x] saving / loading cutlist app state to a file
 - [x] prompt for job number at the start
 - [x] require inputs for new panel sets, and start blank
-- [ ] material cost
+- [x] Make panel sets editable
 - [ ] accessory box needs to affect the height of the frame
 - [ ] minimum dimension for feet / base
-- [ ] Make panel sets editable
 - [ ] accessories dimensions input
 - [ ] support more materials / crate types
-- [ ] 3D packing visualizer?
+- [ ] 3D packing visualizer? <-- **current wip**
+- [ ] material cost
