@@ -115,24 +115,6 @@ export function getFlatCutlist (job: Job): Cutlist {
         ],
     };
 
-    // if any panel has lighting, add 4 inches to the long wall length
-    const accessoriesWiggleRoom: Equation['terms'][number] = {
-        name: 'accessories wiggle room',
-        value: 0,
-    };
-    if (job.panelSets.some((panelSet) => panelSet.lighting === 'Yes') && accessoriesWiggleRoom.value < 4) {
-        accessoriesWiggleRoom.value = 4;
-    }
-    if (job.tmpAccessories.smallBox && accessoriesWiggleRoom.value < 8) {
-        accessoriesWiggleRoom.value = 8;
-    }
-    if (job.tmpAccessories.largeBox && accessoriesWiggleRoom.value < 12) {
-        accessoriesWiggleRoom.value = 12;
-    }
-    if (accessoriesWiggleRoom.value > 0) {
-        longWallLengthEq.terms.push(accessoriesWiggleRoom);
-    }
-
     const plywoodLengthEq: Equation = {
         name: 'plywood length',
         terms: [

@@ -16,6 +16,7 @@
             <v-expansion-panels
                 tile
                 multiple
+                class="px-3"
                 v-model="openSections"
             >
                 <v-expansion-panel>
@@ -119,23 +120,6 @@
                         />
                     </template>
                 </v-expansion-panel>
-                <v-expansion-panel>
-                    <template #title>
-                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
-                            <b class="flex-grow-1">Accessories</b>
-                        </div>
-                    </template>
-                    <template #text>
-                        <v-checkbox
-                            label="Small Box"
-                            v-model="smallBox"
-                        />
-                        <v-checkbox
-                            label="Large Box"
-                            v-model="largeBox"
-                        />
-                    </template>
-                </v-expansion-panel>
             </v-expansion-panels>
             <JobPrompt />
         </v-main>
@@ -188,14 +172,6 @@ function deletePanelSet (id: string) {
     panelSets.value = { ...panelSets.value };
 }
 
-const smallBox = computed({
-    get: () => store.value.smallBox,
-    set: val => store.value = { ...store.value, smallBox: val },
-});
-const largeBox = computed({
-    get: () => store.value.largeBox,
-    set: val => store.value = { ...store.value, largeBox: val },
-});
 
 const jobNumber = computed(() => store.value.jobNumber);
 const jobName = computed(() => store.value.jobName);
@@ -203,10 +179,6 @@ const jobName = computed(() => store.value.jobName);
 const cutlist = computed<CutlistType>(() => getFlatCutlist({
     panelSets: Object.values(panelSets.value),
     accessories: null,
-    tmpAccessories: {
-        smallBox: smallBox.value,
-        largeBox: largeBox.value,
-    },
 }));
 
 async function onFileSelectedForImport (file: File[] | File) {

@@ -7,8 +7,6 @@ const storeSchema = z.object({
     version: z.literal(1),
     /** keyed by panel id */
     panelSets: z.record(panelSetSchema),
-    smallBox: z.boolean(),
-    largeBox: z.boolean(),
     jobNumber: z.string(),
     jobName: z.string(),
 });
@@ -17,8 +15,6 @@ export type Store = z.infer<typeof storeSchema>;
 export const store = ref<Store>({
     version: 1,
     panelSets: {},
-    smallBox: false,
-    largeBox: false,
     jobNumber: '', // required. but should be changed after initial prompt
     jobName: '',
 });
