@@ -9,7 +9,8 @@ const storeSchema = z.object({
     panelSets: z.record(panelSetSchema),
     smallBox: z.boolean(),
     largeBox: z.boolean(),
-    job: z.string(),
+    jobNumber: z.string(),
+    jobName: z.string(),
 });
 export type Store = z.infer<typeof storeSchema>;
 
@@ -18,13 +19,14 @@ export const store = ref<Store>({
     panelSets: {},
     smallBox: false,
     largeBox: false,
-    job: '', // should be changed after initial prompt
+    jobNumber: '', // required. but should be changed after initial prompt
+    jobName: '',
 });
 
 export function exportStore () {
     const data = JSON.stringify(store.value, null, 2);
 
-    const jobNumber = store.value.job;
+    const jobNumber = store.value.jobNumber;
     if (!jobNumber?.match(/^[0-9]+$/mugi)) {
         alert('Job number must be a number');
         return;

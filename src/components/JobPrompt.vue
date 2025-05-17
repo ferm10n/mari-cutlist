@@ -5,7 +5,7 @@
     >
         <v-card>
             <v-card-title>
-                Enter Job Number
+                Enter Job Number and Name
             </v-card-title>
             <v-card-text>
                 <v-text-field
@@ -14,11 +14,16 @@
                     type="number"
                     @keydown.enter="onOk"
                 />
+                <v-text-field
+                    v-model="jobName"
+                    label="Job Name"
+                    @keydown.enter="onOk"
+                />
             </v-card-text>
             <v-card-actions>
                 <v-btn
                     color="success"
-                    :disabled="job === null"
+                    :disabled="job === null || !jobName"
                     block
                     @click="onOk"
                 >
@@ -39,12 +44,14 @@ import {
 
 const showDialog = ref(true);
 const job = ref<number | null>(null);
+const jobName = ref<string>('');
 
 function onOk () {
-    if (job.value === null) {
+    if (job.value === null || !jobName.value) {
         return;
     }
-    store.value = { ...store.value, job: String(job.value) };
+
+    store.value = { ...store.value, jobNumber: String(job.value), jobName: jobName.value };
     showDialog.value = false;
 }
 </script>

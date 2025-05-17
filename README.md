@@ -84,5 +84,6 @@
 - [ ] minimum dimension for feet / base
 - [ ] accessories dimensions input
 - [ ] support more materials / crate types
-- [ ] 3D packing visualizer? <-- **current wip**
+- [ ] ~~3D packing visualizer? <-- **current wip**~~
+    - *maybe one day*
 - [ ] material cost

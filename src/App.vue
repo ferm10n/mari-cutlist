@@ -1,6 +1,18 @@
 <template>
     <v-app>
         <v-main>
+            <v-banner
+                class="mb-4 bg-teal-accent-3"
+                elevation="2"
+                v-if="jobNumber || jobName"
+            >
+                <template #prepend>
+                    <v-icon color="white">mdi-briefcase</v-icon>
+                </template>
+                <span class="white--text font-weight-bold">
+                    Job #{{ jobNumber }}<span v-if="jobName">: {{ jobName }}</span>
+                </span>
+            </v-banner>
             <v-expansion-panels
                 tile
                 multiple
@@ -136,7 +148,6 @@ import {
     ref,
 } from 'vue';
 import type {
-    Job,
     Cutlist as CutlistType,
 } from './types';
 import PanelSetDialog from '@/components/PanelSetDialog.vue'
@@ -186,18 +197,17 @@ const largeBox = computed({
     set: val => store.value = { ...store.value, largeBox: val },
 });
 
-const job = computed<Job>(() => {
-    return {
-        panelSets: Object.values(panelSets.value),
-        accessories: null,
-        tmpAccessories: {
-            smallBox: smallBox.value,
-            largeBox: largeBox.value,
-        },
-    };
-});
+const jobNumber = computed(() => store.value.jobNumber);
+const jobName = computed(() => store.value.jobName);
 
-const cutlist = computed<CutlistType>(() => getFlatCutlist(job.value));
+const cutlist = computed<CutlistType>(() => getFlatCutlist({
+    panelSets: Object.values(panelSets.value),
+    accessories: null,
+    tmpAccessories: {
+        smallBox: smallBox.value,
+        largeBox: largeBox.value,
+    },
+}));
 
 async function onFileSelectedForImport (file: File[] | File) {
     if (file instanceof Array) {
