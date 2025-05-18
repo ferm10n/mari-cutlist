@@ -9,7 +9,7 @@
             </v-card-title>
             <v-card-text>
                 <v-text-field
-                    v-model.number.lazy="job"
+                    v-model.number.lazy="jobNumber"
                     label="Job Number"
                     type="number"
                     @keydown.enter="onOk"
@@ -23,7 +23,7 @@
             <v-card-actions>
                 <v-btn
                     color="success"
-                    :disabled="job === null || !jobName"
+                    :disabled="jobNumber === null || !jobName"
                     block
                     @click="onOk"
                 >
@@ -39,19 +39,33 @@ import {
     store,
 } from '../store';
 import {
+    computed,
     ref,
 } from 'vue';
 
-const showDialog = ref(true);
-const job = ref<number | null>(null);
-const jobName = ref<string>('');
-
+const props = defineProps<{
+    showModal: boolean;
+}>();
+const emit = defineEmits<{
+    (e: 'update:showModal', value: boolean): void
+}>();
+const showDialog = computed({
+    get: () => props.showModal,
+    set: val => emit('update:showModal', val),
+});
+const jobNumber = computed({
+    get: () => store.value.jobNumber,
+    set: val => store.value.jobNumber = val,
+});
+const jobName = computed({
+    get: () => store.value.jobName,
+    set: val => store.value.jobName = val,
+});
 function onOk () {
-    if (job.value === null || !jobName.value) {
+    if (jobNumber.value === null || !jobName.value) {
         return;
     }
 
-    store.value = { ...store.value, jobNumber: String(job.value), jobName: jobName.value };
-    showDialog.value = false;
+    emit('update:showModal', false);
 }
 </script>

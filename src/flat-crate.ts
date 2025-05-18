@@ -46,14 +46,6 @@ export function getStackedHeight (job: Job): {
     };
 }
 
-export function evaluateEquation (eq: Equation): number {
-    let sum = 0;
-    for (const term of eq.terms) {
-        sum += term.value * (term.qty || 1);
-    }
-    return sum;
-}
-
 /**
  * @note may be able to adapt for other crate types in the future?
  */

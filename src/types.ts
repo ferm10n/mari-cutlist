@@ -1,9 +1,10 @@
 import z from 'zod';
+import { evaluateEquation } from './eq';
 
 const materialSchema = z.enum(['glass', 'acrylic', 'terrazzo']);
 export type Material = z.infer<typeof materialSchema>;
 
-/** maps internal value to user selected value */
+/** maps inner value to user selected value */
 export const materialOptions: {
     [m in Material]: string;
 } = {
@@ -11,70 +12,6 @@ export const materialOptions: {
     acrylic: 'Acrylic',
     terrazzo: 'Terrazzo',
 };
-
-const zClipSchema = z.enum(['1/8"', '1/2"', 'none']);
-type ZClip = z.infer<typeof zClipSchema>;
-
-/** maps user selected option to thicknessValue */
-export const zClipOptions: {
-    [z in ZClip]: number;
-} = {
-    '1/8"': 0.125,
-    '1/2"': 0.5,
-    'none': 0,
-};
-
-const choiceSchema = z.enum(['Yes', 'No']);
-export type Choice = z.infer<typeof choiceSchema>;
-/** maps user selected option to boolean */
-export const choiceOptions: {
-    [a in Choice]: boolean;
-} = {
-    'Yes': true,
-    'No': false,
-};
-
-export const panelSetSchema = z.object({
-    qty: z.number(),
-    material: materialSchema,
-    width: z.number(),
-    length: z.number(),
-    thickness: z.number(),
-    /** not sure why this is needed */
-    id: z.string(),
-    zClips: zClipSchema,
-    /** if yes, add 5" */
-    lighting: choiceSchema,
-    frame: choiceSchema,
-});
-export type PanelSet = z.infer<typeof panelSetSchema>;
-
-export type Job = {
-    panelSets: PanelSet[];
-    /** dimensions for any extra accessories */
-    accessories: {
-        width: number;
-        length: number;
-        height: number;
-    } | null;
-}
-
-
-/** units in inches */
-export function stabilityWallReinforcements (width: number, height: number) {
-    const meh = height * height + (width * width)/2;
-    return Math.sqrt(meh) - (1.75 * meh) / (.5 * width * height);
-}
-
-// export type Crate = {
-//     kind: 'lightweight' | 'flat' | 'box' | 'a-frame';
-//     /** inches */
-//     width: number;
-//     /** inches */
-//     length: number;
-//     /** inches */
-//     height: number;
-// }
 
 export type SeparatorKind = 'cardboard' | 'thin foam' | 'thick foam';
 
@@ -86,47 +23,81 @@ export const separatorThicknessMap: {
     'thick foam': 0.75,
 }
 
-type FlatCrate = {
-    kind: 'flat';
-    shortWallLength: number;
-    longWallLength: number;
-    plywoodWidth: number;
-    plywoodLength: number;
-    frame: FrameKind;
-    stacking: {
-        panelId: string;
-        separator: SeparatorKind;
-    }[];
-}
-
-// type LightweightCrate = {
-//     kind: 'lightweight';
-// }
-
-// type BoxCrate = {
-//     kind: 'box';
-// }
-
-// type AFrameCrate = {
-//     kind: 'a-frame';
-// }
+const crateKindSchema = z.enum(['flat', 'lightweight', 'box', 'a-frame']);
+export type CrateKind = z.infer<typeof crateKindSchema>;
 
 export type FrameKind = '2x4' | '2x6' | '2x4 + 2x4' | '2x6 + 2x6' | '2x4 + 2x6';
 
-export type Cutlist = {
-    crates: FlatCrate[];
-    // length: number;
-    // qty: number;
-};
+const cutlistItemBaseSchema = z.object({
+    qty: z.number(),
+    name: z.string(),
+    kind: z.string(),
+    notes: z.string().optional(),
+});
+type CutlistItemBase = z.infer<typeof cutlistItemBaseSchema>;
 
-export type Equation = {
-    name: string;
-    /** terms get added together */
-    terms: {
-        value: number;
-        /** where the value comes from */
-        name: string;
-        /** multiplier */
-        qty?: number;
-    }[],
-};
+const cutlistItemWoodSchema = cutlistItemBaseSchema.extend({
+    kind: z.literal('wood'),
+    woodKind: z.enum(['2x4', '2x6', '1x4']),
+    length: z.number(),
+});
+type CutlistItemWood = z.infer<typeof cutlistItemWoodSchema>;
+
+const cutlistItemPlywoodSchema = cutlistItemBaseSchema.extend({
+    kind: z.literal('plywood'),
+    width: z.number(),
+    length: z.number(),
+    thickness: z.literal(0.625),
+});
+type CutlistItemPlywood = z.infer<typeof cutlistItemPlywoodSchema>;
+
+const cutlistItem = z.discriminatedUnion('kind', [
+    cutlistItemWoodSchema,
+    cutlistItemPlywoodSchema,
+]);
+export type CutlistItem = z.infer<typeof cutlistItem>;
+
+const dimensionsSchema = z.object({
+    length: z.number(),
+    width: z.number(),
+    height: z.number(),
+});
+export type Dimensions = z.infer<typeof dimensionsSchema>;
+
+const boxCrateSchema = z.object({
+    adjustedInnerDimensions: dimensionsSchema,
+    seams: z.number(),
+    needsMiddleRunner: z.boolean(),
+    weight: z.number(),
+});
+export type BoxCrate = z.infer<typeof boxCrateSchema>;
+
+const flatCrateSchema = z.object({
+    kind: z.literal('flat'),
+    shortWallLength: z.number(),
+    longWallLength: z.number(),
+    innerDimensions: dimensionsSchema,
+    innerDimensionsWithFingerSpace: dimensionsSchema,
+    wallKind: z.enum([
+        '2x4',
+        '2x6',
+        '2x4 + 2x4',
+        '2x4 + 2x6',
+        '2x6 + 2x6',
+    ]),
+});
+export type FlatCrate = z.infer<typeof flatCrateSchema>;
+
+export const userInputSchema = z.object({
+    innerDimensions: dimensionsSchema,
+    needsMiddleRunner: z.boolean(),
+    weight: z.number(),
+    materials: z.object({
+        acrylic: z.boolean(),
+        glass: z.boolean(),
+        terrazzo: z.boolean(),
+    }),
+    panelsOnEdge: z.boolean(),
+    overrideCrateKind: crateKindSchema.nullable(),
+});
+export type UserInput = z.infer<typeof userInputSchema>;

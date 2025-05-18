@@ -9,9 +9,20 @@
                 <template #prepend>
                     <v-icon color="white">mdi-briefcase</v-icon>
                 </template>
-                <span class="white--text font-weight-bold">
-                    Job #{{ jobNumber }}<span v-if="jobName">: {{ jobName }}</span>
-                </span>
+                <v-banner-text>
+                    <span class="white--text font-weight-bold">
+                        Job #{{ jobNumber }}<span v-if="jobName">: {{ jobName }}</span>
+                    </span>
+                    <v-btn
+                        color="white"
+                        variant="text"
+                        class="ml-auto"
+                        @click="showJobPrompt = true"
+                    >
+                        <v-icon left>mdi-pencil</v-icon>
+                        Edit
+                    </v-btn>
+                </v-banner-text>
             </v-banner>
             <v-expansion-panels
                 tile
@@ -21,107 +32,28 @@
             >
                 <v-expansion-panel>
                     <template #title>
-                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
-                            <b class="flex-grow-1">Panels</b>
-                            <v-file-input
-                                density="compact"
-                                accept="application/json"
-                                label="Import"
-                                hide-details
-                                class="mr-2"
-                                style="max-width: 2in"
-                                @update:model-value="onFileSelectedForImport"
-                            />
-                            <v-btn
-                                color="info"
-                                class="mr-2"
-                                @click="exportStore"
-                            >
-                                <v-icon>mdi-content-save</v-icon>
-                                Export
-                            </v-btn>
-                            <PanelSetDialog
-                                v-model:panel-sets="panelSets"
-                                v-model:panel-set="wipPanelSet"
-                                v-model:mode="showPanelSetDialog"
-                                color="success"
-                            >
-                                <v-btn
-                                    color="success"
-                                    @click.stop="wipPanelSet = initNewPanelSet(); showPanelSetDialog = 'add';"    
-                                >
-                                    <v-icon>mdi-plus-thick</v-icon> Add
-                                </v-btn>
-                            </PanelSetDialog>
-                        </div>
+                        Inputs
                     </template>
                     <template #text>
-                        <v-table>
-                            <thead>
-                                <tr>
-                                    <th>Panel ID</th>
-                                    <th>Material</th>
-                                    <th>Qty</th>
-                                    <th>Width</th>
-                                    <th>Length</th>
-                                    <th>Thiccness</th>
-                                    <th>Z Clips</th>
-                                    <th>Frame</th>
-                                    <th>Lighting</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="panelSet of Object.values(panelSets)"
-                                >
-                                    <td>{{ panelSet.id }}</td>
-                                    <td>{{ panelSet.material }}</td>
-                                    <td>{{ panelSet.qty }}</td>
-                                    <td>{{ panelSet.width }}</td>
-                                    <td>{{ panelSet.length }}</td>
-                                    <td>{{ panelSet.thickness }}</td>
-                                    <td>{{ panelSet.zClips }}</td>
-                                    <td>{{ panelSet.frame }}</td>
-                                    <td>{{ panelSet.lighting }}</td>
-                                    <td class="text-center">
-                                        <v-btn
-                                            variant="text"
-                                            color="orange"
-                                            icon
-                                            @click="editPanelSet(panelSet.id)"
-                                        >
-                                            <v-icon>mdi-pencil</v-icon>
-                                        </v-btn>
-                                        <v-btn
-                                            variant="text"
-                                            color="red"
-                                            icon
-                                            @click="deletePanelSet(panelSet.id)"
-                                        >
-                                            <v-icon>mdi-close</v-icon>
-                                        </v-btn>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </v-table>
+                        <CutlistInputs />
                     </template>
                 </v-expansion-panel>
                 <v-expansion-panel>
                     <template #title>
-                        <div class="d-flex flex-row flex-grow-1 justify-center align-center mr-2">
-                            <b class="flex-grow-1">Cutlist</b>
-                        </div>
+                        <span v-if="crateKind !== null">
+                            {{ crateKind.toLocaleUpperCase() }} - Cutlist
+                        </span>
+                        <span v-else>
+                            Unable to determine crate kind.
+                        </span>
                     </template>
+
                     <template #text>
-                        <Cutlist
-                            class="pa-4"
-                            :cutlist="cutlist"
-                        />
+                        <Cutlist :cutlist="cutlist" />
                     </template>
                 </v-expansion-panel>
             </v-expansion-panels>
-            <JobPrompt />
+            <JobPrompt v-model:show-modal="showJobPrompt" />
         </v-main>
     </v-app>
 </template>
@@ -132,7 +64,7 @@ import {
     ref,
 } from 'vue';
 import type {
-    Cutlist as CutlistType,
+    CutlistItem,
 } from './types';
 import PanelSetDialog from '@/components/PanelSetDialog.vue'
 import {
@@ -143,43 +75,76 @@ import {
     exportStore,
     importStore,
     store,
+    crateKind,
 } from './store';
-import JobPrompt from './components/JobPrompt.vue';
+import JobPrompt, {
+    type Job,
+} from './components/JobPrompt.vue';
 import {
     type NullablePanelSet,
     initNewPanelSet,
 } from './components/panel-set-dialog-utils';
+import CutlistInputs from './components/CutlistInputs.vue';
 
 const openSections = ref([0, 1, 2]);
 
-/** a new panel set, or a panel set being edited */
-const wipPanelSet = ref<NullablePanelSet>(initNewPanelSet());
-const showPanelSetDialog = ref<'add' | 'edit' | null>(null);
-
-const panelSets = computed({
-    get: () => store.value.panelSets,
-    set: val => {
-        showPanelSetDialog.value = null;
-        store.value.panelSets = val;
-    },
-});
-function editPanelSet (id: string) {
-    wipPanelSet.value = { ...panelSets.value[id] };
-    showPanelSetDialog.value = 'edit';
+const showJobPrompt = ref(false);
+if (!store.value.jobNumber || !store.value.jobName) {
+    showJobPrompt.value = true;
 }
-function deletePanelSet (id: string) {
-    delete panelSets.value[id];
-    panelSets.value = { ...panelSets.value };
-}
-
 
 const jobNumber = computed(() => store.value.jobNumber);
 const jobName = computed(() => store.value.jobName);
 
-const cutlist = computed<CutlistType>(() => getFlatCutlist({
-    panelSets: Object.values(panelSets.value),
-    accessories: null,
-}));
+const cutlist = computed<CutlistItem[]>(() => {
+    const flatCrateCutlist: CutlistItem[] = [
+        {
+            name: 'base',
+            kind: 'plywood',
+            qty: 1,
+            width: 33.5,
+            length: 75.5,
+            thickness: 0.625,
+        },
+        {
+            name: 'corner feet',
+            kind: 'wood',
+            woodKind: '2x6',
+            length: 11,
+            qty: 8,
+        },
+        {
+            name: 'center feet',
+            kind: 'wood',
+            woodKind: '2x6',
+            length: 11,
+            qty: 4,
+        },
+        {
+            name: 'long wall',
+            kind: 'wood',
+            woodKind: '2x4',
+            length: 74,
+            qty: 2,
+        },
+        {
+            name: 'short wall',
+            kind: 'wood',
+            woodKind: '2x4',
+            length: 32,
+            qty: 2,
+        },
+        {
+            name: 'top',
+            kind: 'plywood',
+            qty: 1,
+            width: 33.5,
+            length: 75.5,
+            thickness: 0.625,
+        },
+    ];
+    return flatCrateCutlist;
+});
 
 async function onFileSelectedForImport (file: File[] | File) {
     if (file instanceof Array) {
